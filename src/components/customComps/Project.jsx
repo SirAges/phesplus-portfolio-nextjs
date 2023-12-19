@@ -26,7 +26,6 @@ const Project = ({ id }) => {
       try {
         const data = await getProject(id);
         setProject(data);
-        console.log(data);
       } catch (error) {
         console.error("Error fetching projects:", error.message);
       }

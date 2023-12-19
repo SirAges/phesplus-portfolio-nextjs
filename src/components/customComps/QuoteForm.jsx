@@ -1,5 +1,5 @@
 "use client";
-import { Button, buttonVariants } from "@components/ui/button";
+import { buttonVariants } from "@components/ui/button";
 import {
   Card,
   CardContent,
@@ -27,7 +27,6 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@components/ui/dropdown-menu";

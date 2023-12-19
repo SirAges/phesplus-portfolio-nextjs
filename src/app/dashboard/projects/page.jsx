@@ -1,6 +1,5 @@
 import MaxWidthWrapper from "@components/customComps/MaxWidthWrapper";
 import AllProjects from "@components/customComps/AllProjects";
-import { getAllProjects } from "@lib/sanityActions";
 
 const page = () => {
   return (

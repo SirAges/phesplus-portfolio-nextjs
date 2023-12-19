@@ -9,12 +9,15 @@ import { buttonVariants } from "@components/ui/button";
 import Loading from "./Loading";
 const AllProjects = () => {
   const pathname = usePathname();
+  const router = useRouter();
+
   const [loading, setLoading] = useState(false);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(8);
+  const [projects, setProjects] = useState([]);
+
   if (pathname === "/dashboard") {
   }
-  const router = useRouter();
   useEffect(() => {
     const abortController = new AbortController();
     const fetchProjects = async () => {
@@ -39,7 +42,6 @@ const AllProjects = () => {
       abortController.abort();
     };
   }, [start, end]);
-  const [projects, setProjects] = useState([]);
   const previousProjects = () => {
     setStart((prev) => prev - 8);
     setEnd((prev) => prev - 8);

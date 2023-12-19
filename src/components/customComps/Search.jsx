@@ -1,11 +1,10 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "@hooks/DataContext";
-import { getAllProjects, searchProject } from "@lib/sanityActions";
+import { searchProject } from "@lib/sanityActions";
 import Image from "next/image";
 import { Separator } from "@components/ui/separator";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { urlForImage } from "../../../sanity/lib/image";
 import NoProjectFound from "./NoProjectFound";
 import Loading from "./Loading";

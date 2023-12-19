@@ -43,6 +43,33 @@ export const getAllProjects = async (start, end) => {
   }
 };
 
+export const getProject = (id) => {
+  const query = `*[_type == "project" && _id == '${id}']{
+    _id,
+    title,
+    description,
+    price,
+    'category': category->category,
+    'images':images[]{
+      asset->{ 
+        url,
+      }
+    },
+      _createdAt
+  }`;
+  return query;
+};
+
+export const updateProject = async (id) => {
+  try {
+    const query = `*[_type == "project" && _id == '${id}']`;
+    const data = await client.delete(query);
+    return data;
+  } catch (error) {
+    console.error("Error fetching Sanity data:", error.message);
+  }
+};
+
 export const deleteProject = async (id) => {
   try {
     const query = `*[_type == "project" && _id == '${id}']`;
@@ -52,6 +79,7 @@ export const deleteProject = async (id) => {
     console.error("Error fetching Sanity data:", error.message);
   }
 };
+
 export const searchProject = async (searchTerm) => {
   try {
     const query = `*[_type == "project" && title match '${searchTerm}*' ||  description match '${searchTerm}*'
@@ -74,9 +102,7 @@ export const searchProject = async (searchTerm) => {
   }
 };
 //USER username email role
-export const createUser = async (values) => {
-  const user = false;
-
+export const createUser = async (user) => {
   if (user) {
     try {
       // Use the Sanity client to perform a mutation
@@ -84,12 +110,7 @@ export const createUser = async (values) => {
         _type: "user",
         username: user.fullname,
         email,
-        role,
-        images: images.map((url, i) => ({
-          _key: `imageNo${i}`,
-          _type: "image",
-          url,
-        })),
+        role: "user",
       };
       await client.create(doc);
 
@@ -113,120 +134,6 @@ export const uploadImage = async (file, type, name) => {
   } catch (error) {
     console.error("Error submitting data:", error);
   }
-};
-
-export const pinDetailQuery = (pinId) => {
-  const query = `*[_type == "pin" && _id == '${pinId}']{
-    
-  }`;
-  return query;
-};
-
-export const pinDetailMorePinQuery = (pin) => {
-  const query = `*[_type == "pin" && category == '${pin.category}' && _id != '${pin._id}' ]{
-    image{
-      asset->{
-        url
-      }
-    },
-    _id,
-    destination,
-    postedBy->{
-      _id,
-      userName,
-      image
-    },
-    save[]{
-      _key,
-      postedBy->{
-        _id,
-        userName,
-        image
-      },
-    },
-  }`;
-  return query;
-};
-
-export const searchQuery = (searchTerm) => {
-  const query = `*[_type == "pin" && title match '${searchTerm}*' || category match '${searchTerm}*' || about match '${searchTerm}*']{
-        image{
-          asset->{
-            url
-          }
-        },
-            _id,
-            destination,
-            postedBy->{
-              _id,
-              userName,
-              image
-            },
-            save[]{
-              _key,
-              postedBy->{
-                _id,
-                userName,
-                image
-              },
-            },
-          }`;
-  return query;
-};
-
-export const userQuery = (userId) => {
-  const query = `*[_type == "user" && _id == '${userId}']`;
-  return query;
-};
-
-export const userCreatedPinsQuery = (userId) => {
-  const query = `*[ _type == 'pin' && userId == '${userId}'] | order(_createdAt desc){
-    image{
-      asset->{
-        url
-      }
-    },
-    _id,
-    destination,
-    postedBy->{
-      _id,
-      userName,
-      image
-    },
-    save[]{
-      postedBy->{
-        _id,
-        userName,
-        image
-      },
-    },
-  }`;
-  return query;
-};
-
-export const userSavedPinsQuery = (userId) => {
-  const query = `*[_type == 'pin' && '${userId}' in save[].userId ] | order(_createdAt desc) {
-    image{
-      asset->{
-        url
-      }
-    },
-    _id,
-    destination,
-    postedBy->{
-      _id,
-      userName,
-      image
-    },
-    save[]{
-      postedBy->{
-        _id,
-        userName,
-        image
-      },
-    },
-  }`;
-  return query;
 };
 
 //CATEGORIES

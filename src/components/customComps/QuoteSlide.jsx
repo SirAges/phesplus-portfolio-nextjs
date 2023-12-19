@@ -13,12 +13,10 @@ import {
 } from "@components/ui/sheet";
 import { Briefcase } from "lucide-react";
 import { getAllQuotes } from "@lib/sanityActions";
-import { fetchRef } from "@lib/fetchRef";
 import { Separator } from "@components/ui/separator";
 import { ScrollArea } from "@components/ui/scroll-area";
 import { formatDate } from "@lib/formatDate";
 import Link from "next/link";
-import { NextURL } from "next/dist/server/web/next-url";
 import { cn } from "@lib/utils";
 
 const QuoteSlide = () => {
