@@ -1,4 +1,8 @@
+import Loading from "@components/customComps/Loading";
+import { redirect } from "next/navigation";
+
 const HomePage = () => {
-  return <></>;
+  redirect("/dashboard");
+  return <Loading />;
 };
 export default HomePage;
