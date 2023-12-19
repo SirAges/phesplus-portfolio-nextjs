@@ -1,22 +1,8 @@
-import {
-  Briefcase,
-  DoorOpenIcon,
-  LogOut,
-  PowerIcon,
-  ShoppingCart,
-} from "lucide-react";
-import { Button, buttonVariants } from "@components/ui/button";
-import {
-  LoginLink,
-  LogoutLink,
-  RegisterLink,
-  getKindeServerSession,
-} from "@kinde-oss/kinde-auth-nextjs/server";
+import { LogOut } from "lucide-react";
+import { Button } from "@components/ui/button";
 import QuoteSlide from "./QuoteSlide";
-const Auth = () => {
-  const { getUser } = getKindeServerSession();
-  const user = getUser();
-
+const Auth = ({ user, LoginLink, LogoutLink, RegisterLink }) => {
+  console.log(user);
   let content;
 
   content = (
@@ -36,7 +22,7 @@ const Auth = () => {
             className={"drop-shadow-md bg-primary text-white"}
             variant="ghost"
           >
-            <LoginLink>
+            <LoginLink postLoginRedirectURL="dashboard">
               {/* <DoorOpenIcon /> */}
               Sign In
             </LoginLink>
@@ -46,7 +32,7 @@ const Auth = () => {
             className={"drop-shadow-md bg-primary text-white"}
             variant="ghost"
           >
-            <RegisterLink postLoginRedirectURL="/saveUserToDb">
+            <RegisterLink postLoginRedirectURL="/dashboard/saveusertodb">
               {/* <PowerIcon /> */}
               Sign Up
             </RegisterLink>

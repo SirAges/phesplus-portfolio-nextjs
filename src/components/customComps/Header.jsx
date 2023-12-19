@@ -2,8 +2,17 @@ import Link from "next/link";
 import Auth from "./Auth";
 import SearchInput from "./SearchInput";
 import { PenTool } from "lucide-react";
+import {
+  getKindeServerSession,
+  LoginLink,
+  LogoutLink,
+  RegisterLink,
+} from "@kinde-oss/kinde-auth-nextjs/server";
 
-const Header = () => {
+const Header = async () => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  console.log(`user: ${user}`);
   return (
     <div className="sticky top-0 z-50">
       <nav
@@ -19,7 +28,12 @@ const Header = () => {
           <p className="font-medium hidden md:flex">Design School</p>
         </Link>
         <SearchInput />
-        <Auth />
+        <Auth
+          user={user}
+          LoginLink={LoginLink}
+          LogoutLink={LogoutLink}
+          RegisterLink={RegisterLink}
+        />
       </nav>
     </div>
   );

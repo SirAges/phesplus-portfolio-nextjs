@@ -17,7 +17,7 @@ export default {
       title: 'Email',
       type: 'string',
       description: 'The email address of the user',
-      validation: (Rule) => Rule.required().email().unique(),
+      validation: (Rule) => Rule.required(),
     },
     {
       name: 'role',

@@ -15,6 +15,7 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { urlForImage } from "../../../sanity/lib/image";
 
 const Project = ({ id }) => {
   const [project, setProject] = useState([]);
@@ -40,14 +41,14 @@ const Project = ({ id }) => {
   }, [id]);
   return (
     <>
-      {project.map((p) => (
-        <div key={p_id} className="w-full space-y-3">
+      {project?.map((p) => (
+        <div key={p._id} className="w-full space-y-3">
           <div className="flex flex-col space-y-4 ">
             <div className="relative h-[calc(100vh-10rem)]">
               <Image
                 className="object-cover object-center"
                 fill
-                src={p.images[0].asset.url}
+                src={urlForImage(p.images[0])}
                 alt="project"
                 referrerPolicy="no-referrer"
               />
@@ -58,7 +59,7 @@ const Project = ({ id }) => {
               </h1>
               <div className="flex space-x-3">
                 {p.images
-                  .filter((f) => f.asset.url !== p.images[0].asset.url)
+                  .filter((f) => urlForImage(f) !== urlForImage(p.images[0]))
                   .map((i, index) => (
                     <AlertDialog key={index}>
                       <AlertDialogTrigger asChild>

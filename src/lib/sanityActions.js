@@ -1,3 +1,4 @@
+import { dataset } from "../../sanity/env";
 import { client } from "../../sanity/lib/client";
 export const getOwner = async () => {
   try {
@@ -43,21 +44,27 @@ export const getAllProjects = async (start, end) => {
   }
 };
 
-export const getProject = (id) => {
-  const query = `*[_type == "project" && _id == '${id}']{
-    _id,
-    title,
-    description,
-    price,
-    'category': category->category,
-    'images':images[]{
-      asset->{ 
-        url,
-      }
-    },
-      _createdAt
-  }`;
-  return query;
+export const getProject = async (id) => {
+  try {
+    const query = `*[_type == "project" && _id == '${id}']{
+      _id,
+      title,
+      description,
+      price,
+      'category': category->category,
+      'images':images[]{
+        asset->{ 
+          url,
+        }
+      },
+        _createdAt
+    }`;
+
+    const data = await client.fetch(query);
+    return data;
+  } catch (error) {
+    console.error("Error fetching Sanity data:", error.message);
+  }
 };
 
 export const updateProject = async (id) => {
@@ -108,13 +115,16 @@ export const createUser = async (user) => {
       // Use the Sanity client to perform a mutation
       const doc = {
         _type: "user",
-        username: user.fullname,
-        email,
+        _id: user.id,
+        username: `${user.family_name} ${user.given_name}`,
+        email: user.email,
         role: "user",
       };
-      await client.create(doc);
 
+      const data = await client.createIfNotExists(doc);
       console.log("values submitted successfully!");
+
+      return data;
     } catch (error) {
       console.error("Error submitting data:", error);
     }
