@@ -22,7 +22,7 @@ const Auth = ({ user, LoginLink, LogoutLink, RegisterLink }) => {
             className={"drop-shadow-md bg-primary text-white"}
             variant="ghost"
           >
-            <LoginLink postLoginRedirectURL="dashboard">
+            <LoginLink postLoginRedirectURL="/dashboard">
               {/* <DoorOpenIcon /> */}
               Sign In
             </LoginLink>

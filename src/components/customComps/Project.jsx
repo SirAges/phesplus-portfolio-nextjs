@@ -79,7 +79,7 @@ const Project = ({ id }) => {
 
                       <AlertDialogContent
                         className={cn(
-                          "flex flex-col w-[calc(100vw-10rem)] h-[calc(100vh-10rem)] "
+                          "flex flex-col w-full md:w-[calc(100vw-10rem)] h-[calc(100vh-10rem)] "
                         )}
                       >
                         <AlertDialogHeader>

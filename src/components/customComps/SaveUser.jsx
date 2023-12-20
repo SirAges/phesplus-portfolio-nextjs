@@ -46,7 +46,7 @@ const SaveUser = () => {
     return () => {
       abortController.abort();
     };
-  }, []);
+  });
 
   return <Loading text={"Creating new user"} link={""} />;
 };

@@ -15,7 +15,7 @@ import * as z from "zod";
 import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
 import {
-  createQuote,
+  createProject,
   getAllCategory,
   getAllSubCategory,
   uploadImage,
@@ -33,8 +33,7 @@ import {
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { DownloadCloud, Loader, X } from "lucide-react";
 import Image from "next/image";
-
-const QuoteForm = () => {
+const ProjectForm = () => {
   const validator = z.object({
     title: z.string().min(3, { message: "must be more than 3 characters" }),
     country: z.string().min(3, { message: "must be more than 3 characters" }),
@@ -207,7 +206,7 @@ const QuoteForm = () => {
     } else if (values.notes.length === 0) {
       toast.error("Drop A Note To Help Us Understand Your Needs");
     } else {
-      const mutate = createQuote(values, user);
+      const mutate = createProject(values, user);
     }
   };
   return (
@@ -217,7 +216,7 @@ const QuoteForm = () => {
           <CardHeader className={"w-full"}>
             <CardTitle className="text-primary">Quotation Form</CardTitle>
             <CardDescription>
-              Get a Quote That Will Get Your Design Project Rolling
+              Get a Project That Will Get Your Design Project Rolling
             </CardDescription>
           </CardHeader>
           <CardContent className="w-full space-y-3">
@@ -364,4 +363,4 @@ const QuoteForm = () => {
     </>
   );
 };
-export default QuoteForm;
+export default ProjectForm;

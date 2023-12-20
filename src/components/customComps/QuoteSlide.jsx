@@ -48,12 +48,12 @@ const QuoteSlide = () => {
 
   return (
     <Sheet>
-      <SheetTrigger asChild>
+      <SheetTrigger className="w-full" asChild>
         <Button className={"drop-shadow-md text-white "} variant="ghost">
           <Briefcase />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col ">
+      <SheetContent className="flex flex-col w-full">
         <SheetHeader>
           <SheetTitle>Your Submited Quotes</SheetTitle>
 

@@ -6,7 +6,12 @@ import Link from "next/link";
 const ProjectCard = ({ project }) => {
   return (
     <div className="flex flex-col items-start space-y-1 border border-muted rounded-md p-2">
-      <h1 className="text-primary font-medium capitalize">{project.title}</h1>
+      <Link
+        href={`/dashboard/projects/${project._id}`}
+        className="text-primary font-medium capitalize"
+      >
+        {project.title}
+      </Link>
       <p className="text-gray-400 w-full truncate whitespace-nowrap">
         {project.description}
       </p>

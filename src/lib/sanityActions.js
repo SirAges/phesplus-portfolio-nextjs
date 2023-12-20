@@ -1,5 +1,7 @@
 import { dataset } from "../../sanity/env";
 import { client } from "../../sanity/lib/client";
+
+//OWNER
 export const getOwner = async () => {
   try {
     const query = `*[_type == "owner"]{ 
@@ -19,6 +21,30 @@ export const getOwner = async () => {
   }
 };
 
+//HERO
+export const getHero = async () => {
+  try {
+    const heroQuery = `*[_type == "hero"] | order(_createdAt desc){
+      _id,
+      btnText,
+      link,
+      bigText,
+      smallText,
+      discount,
+      'images':images{
+        asset->{ 
+          url,
+        }
+      },
+        _createdAt
+    
+    }`;
+    const data = await client.fetch(heroQuery);
+    return data;
+  } catch (error) {
+    console.error("Error fetching Sanity data:", error.message);
+  }
+};
 //PRODUCTS
 
 export const getAllProjects = async (start, end) => {
@@ -167,9 +193,9 @@ export const getAllSubCategory = async () => {
 };
 //SUBCATEGORIES
 //QUOTES
-export const getAllQuotes = async () => {
+export const getAllQuotes = async (id) => {
   try {
-    const quotesQuery = `*[_type == "quote"] | order(_createdAt desc){
+    const quotesQuery = `*[_type == "quote" && senderId == '${id}'] | order(_createdAt desc){
       _createdAt,
       budget,
       'category': category->category,
@@ -191,6 +217,7 @@ export const createQuote = async (values, user) => {
       const doc = {
         _type: "quote",
         senderId: user.id,
+        status: "pending",
         fullname: `${user.family_name} ${user.given_name}`,
         country,
         category: {

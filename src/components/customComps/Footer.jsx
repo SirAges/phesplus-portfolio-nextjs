@@ -37,7 +37,7 @@ const Footer = () => {
   return (
     <div className="flex text-gray-500 flex-col md:flex-row justify-between gap-50 px-10 py-2 space-y-5">
       <div className="md:w-2/5 w-full">
-        {owner.map((item, i) => (
+        {owner?.map((item, i) => (
           <ul className="space-y-3  " key={i}>
             <li className="flex items-center whitespace-nowrap">
               <User className="text-primary mr-2" /> {item.name}

@@ -53,13 +53,13 @@ const AllProjects = () => {
     router.refresh();
   };
   if (loading) return <Loading text={"Fetching Projects"} />;
-  if (projects?.length === 0)
-    return (
-      <NoProjectFound
-        text={" Sorry We are not unable to fetch project"}
-        link={"/dashboard"}
-      />
-    );
+  // if (projects?.length === 0)
+  //   return (
+  //     <NoProjectFound
+  //       text={" Sorry We are not unable to fetch project"}
+  //       link={"/dashboard"}
+  //     />
+  //   );
   return (
     <div className=" w-full flex flex-col items-center ">
       <div className="grid w-full flex-1 gap-3 grid-cols-1 sm:grid-col-2 md:grid-cols-3 lg:grid-cols-4">

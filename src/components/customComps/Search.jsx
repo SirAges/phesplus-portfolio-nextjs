@@ -64,7 +64,11 @@ const Search = () => {
                 </p>
                 <p className="font-medium text-gray-500">{p.category}</p>
                 <p className="flex font-medium text-gray-500">
-                  {Array(p.price.toString().length).fill("$")} Worth
+                  Worth{" "}
+                  <p className="text-primary">
+                    {" "}
+                    {Array(p.price.toString().length).fill("$")}
+                  </p>
                 </p>
               </div>
             </div>

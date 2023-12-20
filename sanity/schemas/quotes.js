@@ -13,6 +13,13 @@ export default {
       validation: (Rule) => Rule.required(),
     },
     {
+      name: 'status',
+      title: 'Status',
+      type: 'string',
+      description: 'The sender associated with the quote',
+      validation: (Rule) => Rule.required(),
+    },
+    {
       name: 'title',
       title: 'Title',
       type: 'string',
@@ -39,6 +46,20 @@ export default {
       type: 'reference',
       to: [{type: 'category'}],
       description: 'The main design category of the project',
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: 'Paid',
+      title: 'Paid',
+      type: 'boolean',
+      description: 'The sender associated with the quote',
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: 'amount',
+      title: 'Amount',
+      type: 'number',
+      description: 'The sender associated with the quote',
       validation: (Rule) => Rule.required(),
     },
     {
