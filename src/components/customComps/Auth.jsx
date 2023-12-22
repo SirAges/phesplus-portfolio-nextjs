@@ -2,14 +2,13 @@ import { LogOut } from "lucide-react";
 import { Button } from "@components/ui/button";
 import QuoteSlide from "./QuoteSlide";
 const Auth = ({ user, LoginLink, LogoutLink, RegisterLink }) => {
-  console.log(user);
   let content;
 
   content = (
     <div className="space-x-2 flex">
       {user ? (
         <>
-          <QuoteSlide />
+          <QuoteSlide user={user} />
           <Button className={"drop-shadow-md text-white "} variant="ghost">
             <LogoutLink>
               <LogOut />

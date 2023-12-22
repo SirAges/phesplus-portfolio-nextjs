@@ -19,13 +19,13 @@ import { formatDate } from "@lib/formatDate";
 import Link from "next/link";
 import { cn } from "@lib/utils";
 
-const QuoteSlide = () => {
+const QuoteSlide = ({ user }) => {
   const [quotes, setQuotes] = useState([]);
-
+  console.log(`User Form: ${user}`);
   useEffect(() => {
     const fetchQuotes = async () => {
       try {
-        const data = await getAllQuotes();
+        const data = await getAllQuotes(user.id);
         setQuotes(data);
       } catch (error) {
         console.error("Error fetching quotes:", error.message);
@@ -33,7 +33,7 @@ const QuoteSlide = () => {
     };
 
     fetchQuotes();
-  }, []);
+  }, [user.id]);
   let content;
   content = quotes?.map((q) => (
     <div key={q._id}>

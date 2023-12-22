@@ -1,10 +1,8 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import hero from "../../../sanity/schemas/hero";
 import { urlForImage } from "../../../sanity/lib/image";
 import { getHero } from "@lib/sanityActions";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { A11y, EffectFade, Autoplay } from "swiper/modules";
 // import Swiper and modules styles
@@ -38,7 +36,7 @@ const HeroBanner = () => {
       abortController.abort();
     };
   }, []);
-  console.log(hero);
+  if (!hero) return null;
   return (
     <Swiper
       className="w-full h-[calc(100vh-4rem)] overflow-hidden"
@@ -48,10 +46,9 @@ const HeroBanner = () => {
       loop={true}
       autoplay={{
         delay: 500,
-        disableOnInteraction: false,
       }}
     >
-      {hero.map((h) => (
+      {hero?.map((h) => (
         <SwiperSlide key={h._id} className="w-full overflow-hidden">
           <div className="h-full overflow-hidden">
             <div className="relative h-full overflow-hidden">
@@ -70,3 +67,12 @@ const HeroBanner = () => {
   );
 };
 export default HeroBanner;
+
+export async function generateStaticProps() {
+  const data = getHero();
+  const hero = await data;
+
+  return {
+    props: { hero },
+  };
+}

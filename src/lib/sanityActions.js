@@ -175,7 +175,8 @@ export const uploadImage = async (file, type, name) => {
 //CATEGORIES
 export const getAllCategory = async () => {
   try {
-    const categoryQuery = `*[_type == "category"] | order(_createdAt desc){_id,category}`;
+    const categoryQuery = `*[_type == "category"] | order(_createdAt desc){
+      _id,category}`;
     const data = await client.fetch(categoryQuery);
     return data;
   } catch (error) {
@@ -184,23 +185,88 @@ export const getAllCategory = async () => {
 };
 export const getAllSubCategory = async () => {
   try {
-    const categoryQuery = `*[_type == "subCategory"] | order(_createdAt desc){_id,subCategory}`;
+    const categoryQuery = `*[_type == "subCategory"] | order(_createdAt desc){
+      _id,
+      subCategory,
+      'category': category->category,
+    }`;
     const data = await client.fetch(categoryQuery);
     return data;
   } catch (error) {
     console.error("Error fetching Sanity data:", error.message);
   }
 };
+
+export const createCategory = async (value) => {
+  if (value) {
+    try {
+      // Use the Sanity client to perform a mutation
+
+      const doc = {
+        _type: "category",
+        category: value,
+      };
+      const data = await client.create(doc);
+      console.log("Category submitted successfully!");
+      if (!data || data === null || data === undefined) {
+        return null;
+      }
+      return data;
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  } else {
+    return null;
+  }
+};
+
+export const deleteDoc = async (id) => {
+  try {
+    const data = await client.delete(id);
+    return "deleted";
+  } catch (error) {
+    console.error("Error deleting Sanity data:", error.message);
+  }
+};
+
+export const createSubCategory = async (value, mainCat) => {
+  if (value) {
+    try {
+      // Use the Sanity client to perform a mutation
+
+      const doc = {
+        _type: "subCategory",
+        subCategory: value,
+        category: {
+          _type: "reference",
+          _ref: mainCat,
+        },
+      };
+      const data = await client.create(doc);
+      console.log("Category submitted successfully!");
+      if (!data || data === null || data === undefined) {
+        return null;
+      }
+      return data;
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  } else {
+    return null;
+  }
+};
 //SUBCATEGORIES
 //QUOTES
 export const getAllQuotes = async (id) => {
   try {
-    const quotesQuery = `*[_type == "quote" && senderId == '${id}'] | order(_createdAt desc){
+    const quotesQuery = `
+    *[_type == "quote" && senderId == '${id}'] | order(_createdAt desc){
       _createdAt,
       budget,
       'category': category->category,
 
     }`;
+
     const data = await client.fetch(quotesQuery);
     return data;
   } catch (error) {

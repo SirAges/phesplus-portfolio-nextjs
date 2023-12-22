@@ -15,14 +15,16 @@ const ProjectCard = ({ project }) => {
       <p className="text-gray-400 w-full truncate whitespace-nowrap">
         {project.description}
       </p>
+
       <Link
+        style={{ minHeight: "24rem" }}
         href={`/dashboard/projects/${project._id}`}
-        className="relative  h-64 w-full"
+        className="relative  min-w-full"
       >
         <Image
           fill
           referrerPolicy="no-referrer"
-          className=" rounded-md  object-cover  object-center"
+          className=" rounded-md object-cover  object-center"
           src={urlForImage(project?.images[0]?.asset?.url)}
           alt={project.title}
         />

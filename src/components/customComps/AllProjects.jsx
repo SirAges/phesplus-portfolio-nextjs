@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@lib/utils";
 import { buttonVariants } from "@components/ui/button";
 import Loading from "./Loading";
+import Masonry from "react-masonry-css";
 const AllProjects = () => {
   const pathname = usePathname();
   const router = useRouter();
@@ -52,6 +53,16 @@ const AllProjects = () => {
     setEnd((prev) => prev + 8);
     router.refresh();
   };
+
+  const breakpointColumnsObj = {
+    default: 4,
+    3000: 6,
+    2000: 5,
+    1200: 3,
+    1000: 2,
+    500: 1,
+  };
+
   if (loading) return <Loading text={"Fetching Projects"} />;
   // if (projects?.length === 0)
   //   return (
@@ -62,11 +73,15 @@ const AllProjects = () => {
   //   );
   return (
     <div className=" w-full flex flex-col items-center ">
-      <div className="grid w-full flex-1 gap-3 grid-cols-1 sm:grid-col-2 md:grid-cols-3 lg:grid-cols-4">
+      <Masonry
+        className=" w-full flex gap-2 flex-1"
+        breakpointCols={breakpointColumnsObj}
+      >
         {projects?.map((p) => (
-          <ProjectCard key={p._id} project={p} />
+          <ProjectCard key={p._id} project={p} className="" />
         ))}
-      </div>
+      </Masonry>
+
       {pathname !== "/dashboard" ? (
         <div className="flex space-x-3">
           {start !== 0 && (
