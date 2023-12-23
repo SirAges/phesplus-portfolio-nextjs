@@ -9,15 +9,17 @@ import {
   getAllCategory,
   getAllSubCategory,
 } from "@lib/sanityActions";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import toast, { useToasterStore } from "react-hot-toast";
 
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import Form from "./Form";
+import { DataContext } from "@hooks/DataContext";
 
 const QuoteForm = () => {
   const { user } = useKindeBrowserClient();
+  const { quoteValues, setQuoteValues } = useContext(DataContext);
 
   const validator = z.object({
     title: z.string().min(3, { message: "must be more than 3 characters" }),
@@ -87,15 +89,6 @@ const QuoteForm = () => {
     };
   }, []);
 
-  const [values, setValues] = useState({
-    title: "",
-    country: "",
-    category: "",
-    subCategory: "",
-    budget: 0,
-    images: [],
-    notes: "",
-  });
   const formValues = [
     {
       id: "title",
@@ -146,22 +139,26 @@ const QuoteForm = () => {
     }
   };
   const onSubmit = async () => {
-    if (values.title.length === 0) {
+    if (quoteValues.title.length === 0) {
       toast.error("Please Add Your Title");
-    } else if (values.category.length === 0) {
+    } else if (quoteValues.category.length === 0) {
       toast.error("Please Choose Your Category");
-    } else if (values.subCategory.length === 0) {
+    } else if (quoteValues.subCategory.length === 0) {
       toast.error("Please Choose Your Sub Category");
-    } else if (values.budget.length === 0) {
+    } else if (quoteValues.budget.length === 0) {
       toast.error("Please Add A Budget");
-    } else if (values.images.length === 0) {
+    } else if (quoteValues.images.length === 0) {
       toast.error("Please Add An Image");
-    } else if (values.notes.length === 0) {
+    } else if (quoteValues.notes.length === 0) {
       toast.error("Drop A Note To Help Us Understand Your Needs");
     } else {
       try {
         setSubmitting(true);
-        const mutate = await createQuote(values, user);
+        if (quoteValues.action === "create") {
+          const mutate = await createQuote(quoteValues, user);
+        } else {
+          const mutate = await updateQuote(quoteValues, user);
+        }
       } catch (error) {
         console.log(error);
       } finally {
@@ -171,22 +168,22 @@ const QuoteForm = () => {
     }
   };
   return (
-    <>
-      <Form
-        formValues={formValues}
-        values={values}
-        setValues={setValues}
-        chooseCategory={chooseCategory}
-        onSubmit={onSubmit}
-        trigger={trigger}
-        category={category}
-        subCategory={subCategory}
-        register={register}
-        handleSubmit={handleSubmit}
-        errors={errors}
-        submitting={submitting}
-      />
-    </>
+    <Form
+      formValues={formValues}
+      values={quoteValues}
+      setValues={setQuoteValues}
+      chooseCategory={chooseCategory}
+      onSubmit={onSubmit}
+      trigger={trigger}
+      category={category}
+      subCategory={subCategory}
+      register={register}
+      handleSubmit={handleSubmit}
+      errors={errors}
+      submitting={submitting}
+      formTitle={"Quote Form"}
+      formDescription={"Quote Description"}
+    />
   );
 };
 export default QuoteForm;

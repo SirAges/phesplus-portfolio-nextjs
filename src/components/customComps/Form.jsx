@@ -26,17 +26,17 @@ const Form = ({
   formValues,
   values,
   setValues,
-
   chooseCategory,
   onSubmit,
   trigger,
-
   category,
   subCategory,
   register,
   handleSubmit,
   errors,
   submitting,
+  formTitle,
+  formDescription,
 }) => {
   const [loadingImage, setLoadingImage] = useState();
   const onHandleInputs = (e) => {
@@ -72,13 +72,11 @@ const Form = ({
     }));
   };
   return (
-    <div className="flex  items-center md:w-1/2 justify-center h-full w-full">
+    <div className="flex items-center lg:w-1/3 w-full justify-center h-full">
       <Card className="flex flex-col flex-1 items-center py-2">
         <CardHeader className={"w-full"}>
-          <CardTitle className="text-primary">Quotation Form</CardTitle>
-          <CardDescription>
-            Get a Quote That Will Get Your Design Project Rolling
-          </CardDescription>
+          <CardTitle className="text-primary">{formTitle}</CardTitle>
+          <CardDescription>{formDescription}</CardDescription>
         </CardHeader>
         <CardContent className="w-full space-y-3">
           <form className="w-full space-y-3" onSubmit={handleSubmit(onSubmit)}>
@@ -98,9 +96,9 @@ const Form = ({
                     </div>
                   ) : values.images.length && id === "images" ? (
                     <div className="relative grid grid-cols-4 gap-1 w-full h-full overflow-hidden">
-                      {values.images.map((i, index) => (
+                      {values?.images?.map((i, index) => (
                         <div
-                          key={i._id}
+                          key={i?._id}
                           className="flex justify-center items-center w-full h-24 relative group "
                         >
                           <Image
@@ -190,25 +188,27 @@ const Form = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className={
-                "border border-input bg-background px-3 py-2 focus-visible:outline-none  rounded-md w-full cursor-pointer"
-              }
-            >
-              {trigger.sub ? trigger.sub : "Sub Category"}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuSeparator />
-              {subCategory?.map((c) => (
-                <>
-                  <DropdownMenuItem onClick={() => chooseCategory(c, "sub")}>
-                    {c.subCategory}
-                  </DropdownMenuItem>
-                </>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {subCategory && (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={
+                  "border border-input bg-background px-3 py-2 focus-visible:outline-none  rounded-md w-full cursor-pointer"
+                }
+              >
+                {trigger.sub ? trigger.sub : "Sub Category"}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuSeparator />
+                {subCategory?.map((c) => (
+                  <>
+                    <DropdownMenuItem onClick={() => chooseCategory(c, "sub")}>
+                      {c.subCategory}
+                    </DropdownMenuItem>
+                  </>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           <button
             disabled={submitting}

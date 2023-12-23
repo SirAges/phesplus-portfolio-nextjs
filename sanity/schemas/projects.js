@@ -22,6 +22,12 @@ export default {
       validation: (Rule) => Rule.required(),
     },
     {
+      name: 'link',
+      title: 'Link',
+      type: 'text',
+      description: 'link to your project',
+    },
+    {
       name: 'price',
       title: 'Price',
       type: 'number',

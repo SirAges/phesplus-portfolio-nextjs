@@ -21,7 +21,9 @@ import {
   deleteDoc,
   getAllCategory,
   getAllProjects,
+  getAllQuotes,
   getAllSubCategory,
+  updateProject,
 } from "@lib/sanityActions";
 import {
   ArrowRight,
@@ -40,10 +42,12 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast, { useToasterStore } from "react-hot-toast";
 import { urlForImage } from "../../../sanity/lib/image";
 import { ScrollArea } from "@components/ui/scroll-area";
+import { DataContext } from "@hooks/DataContext";
+import { cn } from "@lib/utils";
 
 const AdminDashboard = () => {
   const [sending, setSending] = useState(false);
@@ -54,14 +58,17 @@ const AdminDashboard = () => {
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [quotes, setQuotes] = useState([]);
   const [mainCat, setMainCat] = useState({ id: "", category: "" });
   const [catInputs, setCatInputs] = useState({
     category: "",
     subCategory: "",
   });
+  const { projectValues, setProjectValues } = useContext(DataContext);
 
   const router = useRouter();
   const { toasts } = useToasterStore();
+  const { mainToggle, formToggle } = useContext(DataContext);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -70,21 +77,24 @@ const AdminDashboard = () => {
       try {
         const data = await getAllCategory();
         const subdata = await getAllSubCategory();
-        const projectdata = await getAllProjects(0, 15);
+        const projectdata = await getAllProjects();
+        const quotedata = await getAllQuotes();
         if (
           data === null ||
           data === undefined ||
           subdata === null ||
           subdata === undefined ||
-          data === undefined ||
           projectdata === null ||
-          projectdata === undefined
+          projectdata === undefined ||
+          quotedata === null ||
+          quotedata === undefined
         ) {
-          return toast.error("Un able to fetch some data");
+          return toast.error("Unable to fetch some data");
         } else {
           setCategory(data);
           setSubCategory(subdata);
           setProjects(projectdata);
+          setQuotes(quotedata);
         }
       } catch (error) {
         console.error("Error fetching category:", error.message);
@@ -179,10 +189,31 @@ const AdminDashboard = () => {
       }
     }
   };
+
+  const editItem = async (item, clicked) => {
+    if (clicked === "project") {
+      setProjectValues({ ...item, action: "edit" });
+    }
+    if (clicked === "quote") {
+      setProjectValues({ ...item, action: "edit" });
+    }
+  };
   return (
-    <div className="w-full flex space-x-2 relative ">
-      <div className="flex-1">
-        <Card id="project">
+    <>
+      <div className="space-y-3 flex-1 ">
+        {/* {mainToggle.projectlist && null} */}
+
+        <Card
+          id="project"
+          className={cn("md:flex ", {
+            hidden: !mainToggle.projectlist,
+            flex:
+              !formToggle.projectform &&
+              !formToggle.quoteform &&
+              !mainToggle.quotelist &&
+              !mainToggle.catlist,
+          })}
+        >
           <CardHeader>
             <div className={"flex items-center justify-between"}>
               <div>
@@ -197,49 +228,124 @@ const AdminDashboard = () => {
               </div>
             </div>
           </CardHeader>
-          <ScrollArea className="max-h-52">
-            <CardContent className="space-y-2">
-              {projects?.map((p) => (
-                <Card key={p._id}>
-                  <CardContent className={"flex items-center justify-between "}>
-                    <div
-                      className={"flex items-center justify-start space-x-4 "}
+          <CardContent>
+            <ScrollArea className={cn("md:h-[40vh] h-[calc(100vh-8rem)]")}>
+              <div className="space-y-2">
+                {projects?.map((p) => (
+                  <Card key={p._id}>
+                    <CardContent
+                      className={"flex items-center justify-between "}
                     >
-                      <div className="relative w-10 h-10 ">
-                        <Image
-                          className="object-cover object-center rounded-sm"
-                          fill
-                          referrerPolicy="no-referrer"
-                          src={urlForImage(p.images[0])}
-                          alt={p.title}
-                        />
-                      </div>
+                      <div
+                        className={"flex items-center justify-start space-x-4 "}
+                      >
+                        <div className="relative w-10 h-10 ">
+                          <Image
+                            className="object-cover object-center rounded-sm"
+                            fill
+                            referrerPolicy="no-referrer"
+                            src={urlForImage(p.images[0])}
+                            alt={p.title}
+                          />
+                        </div>
 
-                      <CardTitle className="text-md">{p.title}</CardTitle>
-                    </div>
-                    <div className="flex space-x-3">
-                      <Edit3
-                        onClick={() => editItem(p._id, "project")}
-                        className="w-5 h-5 p-1 text-primary bg-muted rounded-full"
-                      />
-                      {deleting && deletingIdx === p._id ? (
-                        <Loader className="w-5 h-5 p-1 animate-spin text-destructive  " />
-                      ) : (
-                        <X
-                          onClick={() => handleDelete(p._id)}
-                          className="w-5 h-5 p-1   text-white   rounded-full bg-destructive"
+                        <CardTitle className="text-md">{p.title}</CardTitle>
+                      </div>
+                      <div className="flex space-x-3">
+                        <Edit3
+                          onClick={() => editItem(p, "project")}
+                          className="w-5 h-5 p-1 text-primary bg-muted rounded-full"
                         />
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </CardContent>
-          </ScrollArea>
+                        {deleting && deletingIdx === p._id ? (
+                          <Loader className="w-5 h-5 p-1 animate-spin text-destructive  " />
+                        ) : (
+                          <X
+                            onClick={() => handleDelete(p._id)}
+                            className="w-5 h-5 p-1   text-white   rounded-full bg-destructive"
+                          />
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+
+        {/* {mainToggle.quotelist && null} */}
+
+        <Card
+          id="quote"
+          className={cn("md:flex", { hidden: !mainToggle.quotelist })}
+        >
+          <CardHeader>
+            <div className={"flex items-center justify-between"}>
+              <div>
+                <CardTitle>Quote</CardTitle>
+                <CardDescription>Quote desc</CardDescription>
+              </div>
+              <div className="w-fit h-fit flex items-center justify-center">
+                <Circle className="w-16 h-16 text-primary" />
+                <h1 className="absolute text-xl text-destructive font-medium">
+                  {quotes?.length}
+                </h1>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className={cn("md:h-[40vh] h-[calc(100vh-8rem)]")}>
+              <div className="space-y-2">
+                {quotes?.map((q) => (
+                  <Card key={q._id}>
+                    <CardContent
+                      className={"flex items-center justify-between "}
+                    >
+                      <div
+                        className={"flex items-center justify-start space-x-4 "}
+                      >
+                        <div className="relative w-10 h-10 ">
+                          <Image
+                            className="object-cover object-center rounded-sm"
+                            fill
+                            referrerPolicy="no-referrer"
+                            src={urlForImage(q.images[0])}
+                            alt={p.title}
+                          />
+                        </div>
+
+                        <CardTitle className="text-md">{p.title}</CardTitle>
+                      </div>
+                      <div className="flex space-x-3">
+                        <Edit3
+                          onClick={() => editItem(q, "quote")}
+                          className="w-5 h-5 p-1 text-primary bg-muted rounded-full"
+                        />
+                        {deleting && deletingIdx === q._id ? (
+                          <Loader className="w-5 h-5 p-1 animate-spin text-destructive  " />
+                        ) : (
+                          <X
+                            onClick={() => handleDelete(q._id)}
+                            className="w-5 h-5 p-1   text-white   rounded-full bg-destructive"
+                          />
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
         </Card>
       </div>
+      {/* {mainToggle.catlist && null} */}
 
-      <div className="w-60 p-1 flex flex-col space-y-2 bg-muted sticky top0 min-h-[calc(100vh-5rem)]">
+      <div
+        className={cn(
+          "md:flex w-full md:w-60 p-1  flex-col space-y-2 md:bg-muted rounded-md sticky top-0 md:min-h-[calc(100vh-5rem)]",
+          { hidden: !mainToggle.catlist }
+        )}
+      >
         <Card id="category">
           <CardHeader>
             <CardTitle>Categories</CardTitle>
@@ -402,7 +508,7 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
   );
 };
 export default AdminDashboard;

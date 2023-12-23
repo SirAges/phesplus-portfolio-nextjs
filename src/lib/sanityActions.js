@@ -47,6 +47,69 @@ export const getHero = async () => {
 };
 //PRODUCTS
 
+export const createProject = async (values) => {
+  const { title, description, link, price, images, category } = values;
+  if (title && description && link && price && images && category) {
+    try {
+      // Use the Sanity client to perform a mutation
+
+      const doc = {
+        _type: "quote",
+        title,
+        description,
+        link,
+        price: Number(price),
+        category: {
+          _type: "reference",
+          _ref: category,
+        },
+        images: images.map((url, i) => ({
+          _key: `imageNo${i}`,
+          _type: "image",
+          url,
+        })),
+      };
+      await client.create(doc);
+
+      console.log("Projects submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting project:", error.message);
+    }
+  }
+};
+
+export const updateProject = async (values) => {
+  const { title, description, link, price, images, category } = values;
+
+  try {
+    const doc = {
+      _type: "quote",
+      title,
+      description,
+      link,
+      price: Number(price),
+      category: {
+        _type: "reference",
+        _ref: category,
+      },
+      images: images.map((url, i) => ({
+        _key: `imageNo${i}`,
+        _type: "image",
+        url,
+      })),
+    };
+    const data = await client
+      .patch(id)
+      .insert({
+        doc,
+      })
+      .commit();
+    return data;
+  } catch (error) {
+    console.error("Error fetching Sanity data:", error.message);
+  }
+};
+
 export const getAllProjects = async (start, end) => {
   try {
     const projectQuery = `*[_type == "project"] | order(_createdAt desc){
@@ -62,7 +125,7 @@ export const getAllProjects = async (start, end) => {
       },
         _createdAt
     
-    }[${start}...${end}]`;
+    }[${start ? start : 0}...${end ? end : null}]`;
     const data = await client.fetch(projectQuery);
     return data;
   } catch (error) {
@@ -87,16 +150,6 @@ export const getProject = async (id) => {
     }`;
 
     const data = await client.fetch(query);
-    return data;
-  } catch (error) {
-    console.error("Error fetching Sanity data:", error.message);
-  }
-};
-
-export const updateProject = async (id) => {
-  try {
-    const query = `*[_type == "project" && _id == '${id}']`;
-    const data = await client.delete(query);
     return data;
   } catch (error) {
     console.error("Error fetching Sanity data:", error.message);
@@ -147,13 +200,42 @@ export const createUser = async (user) => {
         role: "user",
       };
 
-      const data = await client.createIfNotExists(doc);
+      const data = await client.createIfNotExists(doc, user.id);
       console.log("values submitted successfully!");
 
       return data;
     } catch (error) {
       console.error("Error submitting data:", error);
     }
+  }
+};
+
+export const getUser = async (id) => {
+  try {
+    const categoryQuery = `*[_type == "user && _id == '${id}"] | order(_createdAt desc){
+      _id,
+      role,
+      username,
+      email
+    }`;
+    const data = await client.fetch(categoryQuery);
+    return data;
+  } catch (error) {
+    console.error("Error fetching Sanity data:", error.message);
+  }
+};
+export const getAllUser = async () => {
+  try {
+    const categoryQuery = `*[_type == "user"] | order(_createdAt desc){
+      _id,
+      role,
+      username,
+      email
+    }`;
+    const data = await client.fetch(categoryQuery);
+    return data;
+  } catch (error) {
+    console.error("Error fetching Sanity data:", error.message);
   }
 };
 
@@ -303,6 +385,47 @@ export const createQuote = async (values, user) => {
         })),
       };
       await client.create(doc);
+
+      console.log("values submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  }
+};
+export const updateQuote = async (values, user) => {
+  const { country, category, subCategory, budget, images, notes } = values;
+  if (country && category && subCategory && budget && images && notes) {
+    try {
+      // Use the Sanity client to perform a mutation
+
+      const doc = {
+        _type: "quote",
+        senderId: user.id,
+        status: "pending",
+        fullname: `${user.family_name} ${user.given_name}`,
+        country,
+        category: {
+          _type: "reference",
+          _ref: category,
+        },
+        subCategory: {
+          _type: "reference",
+          _ref: subCategory,
+        },
+        budget: Number(budget),
+        notes,
+        images: images.map((url, i) => ({
+          _key: `imageNo${i}`,
+          _type: "image",
+          url,
+        })),
+      };
+      await client
+        .patch(id)
+        .insert({
+          doc,
+        })
+        .commit();
 
       console.log("values submitted successfully!");
     } catch (error) {

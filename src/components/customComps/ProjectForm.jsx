@@ -4,15 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { getAllCategory, getAllSubCategory } from "@lib/sanityActions";
-import { useState, useEffect } from "react";
+import { getAllCategory } from "@lib/sanityActions";
+import { useState, useEffect, useContext } from "react";
 
 import toast, { useToasterStore } from "react-hot-toast";
 
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import Form from "./Form";
+import { DataContext } from "@hooks/DataContext";
 const ProjectForm = () => {
-  const [loading, setLoading] = useState(false);
+  const { projectValues, setProjectValues } = useContext(DataContext);
+  const [submitting, setSubmitting] = useState(false);
 
   const { user } = useKindeBrowserClient();
 
@@ -78,34 +80,34 @@ const ProjectForm = () => {
     };
   }, []);
 
-  const [values, setValues] = useState({
-    title: "",
-    description: "",
-    price: "",
-    images: [],
-    category: "",
-  });
   const formValues = [
     {
       id: "title",
       name: "title",
       type: "text",
-      placeholder: "What do you need",
+      placeholder: "3d Logo Design",
       label: "Title",
     },
     {
       id: "description",
       name: "description",
       type: "text",
-      placeholder: "description",
+      placeholder: "e.g: Ali B logo design",
       label: "Description",
     },
     {
       id: "price",
       name: "price",
       type: "number",
-      placeholder: "price",
+      placeholder: "$200",
       label: "Price",
+    },
+    {
+      id: "link",
+      name: "link",
+      type: "text",
+      placeholder: "e.g: http://example.com",
+      label: "Link",
     },
     {
       id: "images",
@@ -116,13 +118,6 @@ const ProjectForm = () => {
       placeholder: "images",
       label: "Images",
     },
-    {
-      id: "category",
-      name: "category",
-      type: "text",
-      placeholder: "category",
-      label: "Category",
-    },
   ];
 
   const chooseCategory = (item, type) => {
@@ -132,43 +127,49 @@ const ProjectForm = () => {
     }
   };
   const onSubmit = async () => {
-    if (values.title.length === 0) {
+    if (projectValues.title.length === 0) {
       toast.error("Please Add Your title");
-    } else if (values.description.length === 0) {
+    } else if (projectValues.description.length === 0) {
       toast.error("Please Choose Your description");
-    } else if (values.price.length === 0) {
-      toast.error("Please Choose Your Sub price");
-    } else if (values.images.length === 0) {
+    } else if (projectValues.price.length === 0) {
+      toast.error("Please Choose Your price");
+    } else if (projectValues.images.length === 0) {
       toast.error("Please Add A images");
-    } else if (values.category.length === 0) {
+    } else if (projectValues.category.length === 0) {
       toast.error("Please Add An category");
     } else {
       try {
-        setLoading(true);
-        const mutate = await createQuote(values, user);
+        setSubmitting(true);
+        if (projectValues.action === "create") {
+          const mutate = await createProject(projectValues);
+        } else {
+          const mutate = await updateProject(projectValues);
+        }
+        toast.success("Project Created");
       } catch (error) {
-        console.log(error);
+        toast.error(`An error occured \n Message ${error.message}`);
       } finally {
-        setLoading(false);
+        setSubmitting(false);
       }
     }
   };
   return (
-    <>
-      <Form
-        formValues={formValues}
-        values={values}
-        setValues={setValues}
-        chooseCategory={chooseCategory}
-        onSubmit={onSubmit}
-        trigger={trigger}
-        category={category}
-        subCategory={null}
-        register={register}
-        handleSubmit={handleSubmit}
-        errors={errors}
-      />
-    </>
+    <Form
+      formValues={formValues}
+      values={projectValues}
+      setValues={setProjectValues}
+      chooseCategory={chooseCategory}
+      onSubmit={onSubmit}
+      submitting={submitting}
+      trigger={trigger}
+      category={category}
+      subCategory={null}
+      register={register}
+      handleSubmit={handleSubmit}
+      errors={errors}
+      formTitle={"Project Form"}
+      formDescription={"Project Description"}
+    />
   );
 };
 export default ProjectForm;
