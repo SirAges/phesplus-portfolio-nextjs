@@ -4,7 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { getAllCategory } from "@lib/sanityActions";
+import {
+  createProject,
+  getAllCategory,
+  updateProject,
+} from "@lib/sanityActions";
 import { useState, useEffect, useContext } from "react";
 
 import toast, { useToasterStore } from "react-hot-toast";
@@ -12,6 +16,7 @@ import toast, { useToasterStore } from "react-hot-toast";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import Form from "./Form";
 import { DataContext } from "@hooks/DataContext";
+export const revalidate = 0;
 const ProjectForm = () => {
   const { projectValues, setProjectValues } = useContext(DataContext);
   const [submitting, setSubmitting] = useState(false);
@@ -141,11 +146,21 @@ const ProjectForm = () => {
       try {
         setSubmitting(true);
         if (projectValues.action === "create") {
-          const mutate = await createProject(projectValues);
+          const mutate = await createProject(projectValues, "Created");
+          toast.success("Project Created");
         } else {
-          const mutate = await updateProject(projectValues);
+          const mutate = await updateProject(projectValues, "Edited");
+          setProjectValues({
+            title: "",
+            description: "",
+            link: "",
+            price: "",
+            images: [],
+            category: "",
+            action: "create",
+          });
         }
-        toast.success("Project Created");
+        toast.success("Project Edited");
       } catch (error) {
         toast.error(`An error occured \n Message ${error.message}`);
       } finally {
@@ -168,7 +183,11 @@ const ProjectForm = () => {
       handleSubmit={handleSubmit}
       errors={errors}
       formTitle={"Project Form"}
-      formDescription={"Project Description"}
+      formDescription={
+        projectValues.action === "create"
+          ? `${projectValues.action} a new Project`
+          : `${projectValues.action} your Project`
+      }
     />
   );
 };

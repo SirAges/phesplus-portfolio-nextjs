@@ -8,6 +8,7 @@ import {
   createQuote,
   getAllCategory,
   getAllSubCategory,
+  updateQuote,
 } from "@lib/sanityActions";
 import { useState, useEffect, useContext } from "react";
 
@@ -19,7 +20,7 @@ import { DataContext } from "@hooks/DataContext";
 
 const QuoteForm = () => {
   const { user } = useKindeBrowserClient();
-  const { quoteValues, setQuoteValues } = useContext(DataContext);
+  const { quoteValues, setQuoteValues, qOthers } = useContext(DataContext);
 
   const validator = z.object({
     title: z.string().min(3, { message: "must be more than 3 characters" }),
@@ -156,14 +157,15 @@ const QuoteForm = () => {
         setSubmitting(true);
         if (quoteValues.action === "create") {
           const mutate = await createQuote(quoteValues, user);
+          toast.success("Quote Created Successfully");
         } else {
-          const mutate = await updateQuote(quoteValues, user);
+          const mutate = await updateQuote(quoteValues, qOthers);
+          toast.success("Quote Edited Successfully");
         }
       } catch (error) {
         console.log(error);
       } finally {
         setSubmitting(false);
-        toast.success("Quote Submitted Successfully");
       }
     }
   };
@@ -182,7 +184,11 @@ const QuoteForm = () => {
       errors={errors}
       submitting={submitting}
       formTitle={"Quote Form"}
-      formDescription={"Quote Description"}
+      formDescription={
+        quoteValues.action === "create"
+          ? `${quoteValues.action} a new Quote`
+          : `${quoteValues.action} your Quote`
+      }
     />
   );
 };

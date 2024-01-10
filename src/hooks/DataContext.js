@@ -34,6 +34,10 @@ export const DataProvider = ({ children }) => {
     notes: "",
     action: "create",
   });
+  const [qOthers, setQOthers] = useState({
+    status: "pending",
+    paid: false,
+  });
 
   return (
     <DataContext.Provider
@@ -50,6 +54,8 @@ export const DataProvider = ({ children }) => {
         setQuoteValues,
         quoteValues,
         setQuoteValues,
+        qOthers,
+        setQOthers,
       }}
     >
       {children}

@@ -64,11 +64,17 @@ const AdminDashboard = () => {
     category: "",
     subCategory: "",
   });
-  const { projectValues, setProjectValues } = useContext(DataContext);
-
+  const statusConst = ["pending", "processing", "fulfiled"];
   const router = useRouter();
   const { toasts } = useToasterStore();
-  const { mainToggle, formToggle } = useContext(DataContext);
+  const {
+    mainToggle,
+    formToggle,
+    qOthers,
+    setQOthers,
+    setProjectValues,
+    setQuoteValues,
+  } = useContext(DataContext);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -77,7 +83,7 @@ const AdminDashboard = () => {
       try {
         const data = await getAllCategory();
         const subdata = await getAllSubCategory();
-        const projectdata = await getAllProjects();
+        const projectdata = await getAllProjects(0, 20);
         const quotedata = await getAllQuotes();
         if (
           data === null ||
@@ -95,6 +101,8 @@ const AdminDashboard = () => {
           setSubCategory(subdata);
           setProjects(projectdata);
           setQuotes(quotedata);
+
+          console.log(quotes);
         }
       } catch (error) {
         console.error("Error fetching category:", error.message);
@@ -195,9 +203,10 @@ const AdminDashboard = () => {
       setProjectValues({ ...item, action: "edit" });
     }
     if (clicked === "quote") {
-      setProjectValues({ ...item, action: "edit" });
+      setQuoteValues({ ...item, action: "edit" });
     }
   };
+
   return (
     <>
       <div className="space-y-3 flex-1 ">
@@ -205,7 +214,7 @@ const AdminDashboard = () => {
 
         <Card
           id="project"
-          className={cn("md:flex ", {
+          className={cn("md:flex flex-col ", {
             hidden: !mainToggle.projectlist,
             flex:
               !formToggle.projectform &&
@@ -214,18 +223,18 @@ const AdminDashboard = () => {
               !mainToggle.catlist,
           })}
         >
-          <CardHeader>
-            <div className={"flex items-center justify-between"}>
-              <div>
-                <CardTitle>Projects</CardTitle>
-                <CardDescription>Projects desc</CardDescription>
-              </div>
-              <div className="w-fit h-fit flex items-center justify-center">
-                <Circle className="w-16 h-16 text-primary" />
-                <h1 className="absolute text-xl text-destructive font-medium">
-                  {projects?.length}
-                </h1>
-              </div>
+          <CardHeader
+            className={"flex flex-row w-full items-center justify-between"}
+          >
+            <div>
+              <CardTitle>Projects</CardTitle>
+              <CardDescription>Projects desc</CardDescription>
+            </div>
+            <div className="w-fit h-full flex items-center justify-center">
+              <Circle className="w-16 h-16 text-primary" />
+              <h1 className="absolute text-xl text-destructive font-medium">
+                {projects?.length}
+              </h1>
             </div>
           </CardHeader>
           <CardContent>
@@ -279,21 +288,21 @@ const AdminDashboard = () => {
           id="quote"
           className={cn("md:flex", { hidden: !mainToggle.quotelist })}
         >
-          <CardHeader>
-            <div className={"flex items-center justify-between"}>
-              <div>
-                <CardTitle>Quote</CardTitle>
-                <CardDescription>Quote desc</CardDescription>
-              </div>
-              <div className="w-fit h-fit flex items-center justify-center">
-                <Circle className="w-16 h-16 text-primary" />
-                <h1 className="absolute text-xl text-destructive font-medium">
-                  {quotes?.length}
-                </h1>
-              </div>
+          <CardHeader
+            className={"flex flex-row w-full items-center justify-between"}
+          >
+            <div>
+              <CardTitle>Quote</CardTitle>
+              <CardDescription>Quote desc</CardDescription>
+            </div>
+            <div className="w-fit h-fit flex items-center justify-center">
+              <Circle className="w-16 h-16 text-primary" />
+              <h1 className="absolute text-xl text-destructive font-medium">
+                {quotes?.length}
+              </h1>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className={"w-full"}>
             <ScrollArea className={cn("md:h-[40vh] h-[calc(100vh-8rem)]")}>
               <div className="space-y-2">
                 {quotes?.map((q) => (
@@ -304,19 +313,34 @@ const AdminDashboard = () => {
                       <div
                         className={"flex items-center justify-start space-x-4 "}
                       >
-                        <div className="relative w-10 h-10 ">
-                          <Image
-                            className="object-cover object-center rounded-sm"
-                            fill
-                            referrerPolicy="no-referrer"
-                            src={urlForImage(q.images[0])}
-                            alt={p.title}
-                          />
-                        </div>
-
-                        <CardTitle className="text-md">{p.title}</CardTitle>
+                        <h1 className="text-gray-400 "></h1>
+                        <CardTitle className="text-4xl text-gray-600"></CardTitle>
                       </div>
                       <div className="flex space-x-3">
+                        <DropdownMenu className="relative">
+                          <DropdownMenuTrigger asChild>
+                            {qOthers.status}
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent>
+                            {statusConst.map((s) => (
+                              <>
+                                <DropdownMenuItem className="flex items-center justify-between">
+                                  <h1
+                                    onClick={setQOthers((prev) => ({
+                                      ...prev,
+                                      status: s,
+                                    }))}
+                                  >
+                                    {s}
+                                  </h1>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                              </>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+
                         <Edit3
                           onClick={() => editItem(q, "quote")}
                           className="w-5 h-5 p-1 text-primary bg-muted rounded-full"

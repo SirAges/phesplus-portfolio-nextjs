@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@components/ui/dropdown-menu";
-import { DownloadCloud, Loader, X } from "lucide-react";
+import { DownloadCloud, Loader, RefreshCcw, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 const Form = ({
@@ -76,94 +76,101 @@ const Form = ({
       <Card className="flex flex-col flex-1 items-center py-2">
         <CardHeader className={"w-full"}>
           <CardTitle className="text-primary">{formTitle}</CardTitle>
-          <CardDescription>{formDescription}</CardDescription>
+          <CardDescription className="capitalize font-medium text-gray-500 flex justify-between items-center ">
+            <h1> {formDescription}</h1>
+            <RefreshCcw
+              title={"undo to create"}
+              onClick={() =>
+                setValues((prev) => ({ ...prev, action: "create" }))
+              }
+              className="text-primary w-6 h-6 cursor-pointer"
+            />
+          </CardDescription>
         </CardHeader>
         <CardContent className="w-full space-y-3">
           <form className="w-full space-y-3" onSubmit={handleSubmit(onSubmit)}>
-            {formValues.map(({ id, type, label, ...props }) => (
-              <div key={id}>
-                <div
-                  className={`${
-                    id === "images"
-                      ? "w-full h-44 flex items-center  justify-center px-2 py-1 rounded-md bg-gray-200"
-                      : null
-                  }`}
-                >
-                  {loadingImage && id === "images" ? (
-                    <div className="absolute z-20 w-full h-full flex flex-col justify-center items-center space-y-3 text-primary m-auto ">
-                      <Loader size={34} className="animate-spin" />
-                      <p className="">Loading Images...</p>
-                    </div>
-                  ) : values.images.length && id === "images" ? (
-                    <div className="relative grid grid-cols-4 gap-1 w-full h-full overflow-hidden">
-                      {values?.images?.map((i, index) => (
-                        <div
-                          key={i?._id}
-                          className="flex justify-center items-center w-full h-24 relative group "
-                        >
-                          <Image
-                            className="w-full  object-cover"
-                            fill
-                            referrerPolicy="no-referrer"
-                            src={i}
-                            alt={`image ${index}`}
-                          />
-                          <X
-                            onClick={() => deleteImage(i)}
-                            size={24}
-                            className="absolute mx-auto text-white rounded-sm bg-primary lg:hidden lg:group-hover:flex"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <Label
+            {formValues.map(({ id, type, label, image, ...props }) => (
+              <div>
+                {id !== "notes" && id !== "images" ? (
+                  <>
+                    <Label disabled={loadingImage} className={""} htmlFor={id}>
+                      {label}
+                    </Label>
+                    <Input
                       disabled={loadingImage}
-                      className={`${
-                        id === "images" ? " flex flex-col items-center" : ""
+                      className={`text-black ${
+                        errors[id] ? "focus-visible:ring-red-500" : "text-black"
                       }`}
-                      htmlFor={id}
-                    >
-                      {id === "images" ? (
+                      {...register(id)}
+                      props={props}
+                      id={id}
+                      action={(e) => onHandleInputs(e)}
+                      value={values[id]}
+                      type={type}
+                    />
+                  </>
+                ) : id === "notes" ? (
+                  <>
+                    <Label disabled={loadingImage} className={""} htmlFor={id}>
+                      <h1 className="flex flex-col items-center">
+                        <p> Click here to add</p> <DownloadCloud />
+                      </h1>
+                    </Label>
+                    <TextareaAutosize
+                      id={id}
+                      {...props}
+                      onChange={onHandleInputs}
+                      value={values[id]}
+                      type={type}
+                      minRows={4}
+                      maxRows={10}
+                      className={cn(
+                        " flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      )}
+                    />
+                  </>
+                ) : id === "images" ? (
+                  <div className="w-full h-44 flex items-center  justify-center px-2 py-1 rounded-md bg-gray-200">
+                    {loadingImage ? (
+                      <div className="absolute z-20 w-full h-full flex flex-col justify-center items-center space-y-3 text-primary m-auto ">
+                        <Loader size={34} className="animate-spin" />
+                        <p className="">Loading Images...</p>
+                      </div>
+                    ) : values.images.length ? (
+                      <div className="relative grid grid-cols-4 gap-1 w-full h-full overflow-hidden">
+                        {values?.images?.map((i, index) => (
+                          <div
+                            key={i?._id}
+                            className="flex justify-center items-center w-full h-24 relative group "
+                          >
+                            <Image
+                              className="w-full  object-cover"
+                              fill
+                              referrerPolicy="no-referrer"
+                              src={i}
+                              alt={`image ${index}`}
+                            />
+                            <X
+                              onClick={() => deleteImage(i)}
+                              size={24}
+                              className="absolute mx-auto text-white rounded-sm bg-primary lg:hidden lg:group-hover:flex"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <Label
+                        disabled={loadingImage}
+                        className={"flex flex-col items-center"}
+                        htmlFor={id}
+                      >
                         <h1 className="flex flex-col items-center">
                           <p> Click here to add</p> <DownloadCloud />
                         </h1>
-                      ) : (
-                        label
-                      )}
-
-                      <br />
-                    </Label>
-                  )}
-                </div>
-
-                {id === "notes" ? (
-                  <TextareaAutosize
-                    id={id}
-                    {...props}
-                    onChange={onHandleInputs}
-                    value={id !== "images" && values[id]}
-                    type={type}
-                    minRows={4}
-                    maxRows={10}
-                    className={cn(
-                      "flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      </Label>
                     )}
-                  />
-                ) : (
-                  <Input
-                    disabled={loadingImage}
-                    className={`${
-                      errors[id] ? "focus-visible:ring-red-500" : ""
-                    } ${id === "images" ? "hidden" : ""}`}
-                    {...register(id)}
-                    props={props}
-                    id={id}
-                    action={onHandleInputs}
-                    value={id !== "images" && values[id]}
-                    type={type}
-                  />
-                )}
+                  </div>
+                ) : null}
               </div>
             ))}
           </form>

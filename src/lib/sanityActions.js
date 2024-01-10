@@ -83,7 +83,7 @@ export const updateProject = async (values) => {
 
   try {
     const doc = {
-      _type: "quote",
+      _type: "project",
       title,
       description,
       link,
@@ -339,10 +339,42 @@ export const createSubCategory = async (value, mainCat) => {
 };
 //SUBCATEGORIES
 //QUOTES
-export const getAllQuotes = async (id) => {
+export const getAllQuotes = async () => {
+  try {
+    const quotesQuery = `
+    *[_type == "quote" ] | order(_createdAt desc){
+      _id,
+      senderId,
+      status,
+      title,
+      fullname,
+      country,
+      paid,
+      amount,
+      budget,notes,
+      'subCategory':subCategory->subCategory,
+      _createdAt,
+      budget,
+      'category': category->category,
+      'images':images[]{
+        asset->{ 
+          url,
+        }
+      },
+
+    }`;
+
+    const data = await client.fetch(quotesQuery);
+    return data;
+  } catch (error) {
+    console.error("Error fetching Sanity data:", error.message);
+  }
+};
+export const getAllUserQuotes = async (id) => {
   try {
     const quotesQuery = `
     *[_type == "quote" && senderId == '${id}'] | order(_createdAt desc){
+      _id,
       _createdAt,
       budget,
       'category': category->category,
@@ -356,7 +388,7 @@ export const getAllQuotes = async (id) => {
   }
 };
 
-export const createQuote = async (values, user) => {
+export const createQuote = async (values) => {
   const { country, category, subCategory, budget, images, notes } = values;
   if (country && category && subCategory && budget && images && notes) {
     try {
@@ -392,17 +424,16 @@ export const createQuote = async (values, user) => {
     }
   }
 };
-export const updateQuote = async (values, user) => {
-  const { country, category, subCategory, budget, images, notes } = values;
+export const updateQuote = async (values, others) => {
+  const { _id, country, category, subCategory, budget, images, notes } = values;
   if (country && category && subCategory && budget && images && notes) {
     try {
       // Use the Sanity client to perform a mutation
 
       const doc = {
         _type: "quote",
-        senderId: user.id,
-        status: "pending",
-        fullname: `${user.family_name} ${user.given_name}`,
+        status: others.status,
+        paid: others.paid,
         country,
         category: {
           _type: "reference",
@@ -420,12 +451,7 @@ export const updateQuote = async (values, user) => {
           url,
         })),
       };
-      await client
-        .patch(id)
-        .insert({
-          doc,
-        })
-        .commit();
+      await client.patch(_id).insert(doc).commit();
 
       console.log("values submitted successfully!");
     } catch (error) {
