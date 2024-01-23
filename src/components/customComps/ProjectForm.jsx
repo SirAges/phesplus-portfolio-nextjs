@@ -68,7 +68,9 @@ const ProjectForm = () => {
       try {
         const data = await getAllCategory();
         if (data === null || data === undefined) {
-          return toast.error("No category");
+          return toast.error(
+            "Unable to fetch product categories check your INTERNET CONNECTION"
+          );
         } else {
           setCategory(data);
         }
@@ -127,7 +129,7 @@ const ProjectForm = () => {
 
   const chooseCategory = (item, type) => {
     if (type === "cat") {
-      setValues((prev) => ({ ...prev, category: item._id }));
+      setProjectValues((prev) => ({ ...prev, category: item._id }));
       setTrigger((prev) => ({ ...prev, cat: item.category }));
     }
   };

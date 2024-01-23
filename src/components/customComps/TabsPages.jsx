@@ -62,10 +62,10 @@ const TabsPages = () => {
     <div className="w-full bg-background sticky flex top-0 shadow-md z-20">
       <div
         className={cn(
-          "w-full flex-col-reverse gap-y-3 md:flex-row px-4 py-2 items-center md:justify-between justify-center rounded-b-md "
+          "w-full flex-col-reverse space-y-3 md:flex-row px-4 py-2 items-center md:justify-between justify-center rounded-b-md "
         )}
       >
-        <div className="flex items-center justify-between space-x-3">
+        <div className="flex items-center justify-between md:justify-start space-x-3">
           <span
             onClick={() => onToggles("project")}
             className={cn(

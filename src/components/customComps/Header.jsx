@@ -12,6 +12,7 @@ import {
 const Header = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
+
   return (
     <div className="sticky top-0 z-50">
       <nav

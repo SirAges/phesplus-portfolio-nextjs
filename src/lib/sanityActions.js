@@ -1,4 +1,3 @@
-import { dataset } from "../../sanity/env";
 import { client } from "../../sanity/lib/client";
 
 //OWNER
@@ -211,6 +210,8 @@ export const createUser = async (user) => {
 };
 
 export const getUser = async (id) => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
   try {
     const categoryQuery = `*[_type == "user && _id == '${id}"] | order(_createdAt desc){
       _id,

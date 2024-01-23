@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, buttonVariants } from "@components/ui/button";
 import {
   Sheet,
@@ -12,30 +12,17 @@ import {
   SheetTrigger,
 } from "@components/ui/sheet";
 import { Briefcase } from "lucide-react";
-import { getAllQuotes } from "@lib/sanityActions";
 import { Separator } from "@components/ui/separator";
 import { ScrollArea } from "@components/ui/scroll-area";
 import { formatDate } from "@lib/formatDate";
 import Link from "next/link";
 import { cn } from "@lib/utils";
+import { DataContext } from "@hooks/DataContext";
 
-const QuoteSlide = ({ user }) => {
-  const [quotes, setQuotes] = useState([]);
-  console.log(`User Form: ${user}`);
-  useEffect(() => {
-    const fetchQuotes = async () => {
-      try {
-        const data = await getAllQuotes(user.id);
-        setQuotes(data);
-      } catch (error) {
-        console.error("Error fetching quotes:", error.message);
-      }
-    };
-
-    fetchQuotes();
-  }, [user.id]);
+const QuoteSlide = () => {
+  const { userQuotes } = useContext(DataContext);
   let content;
-  content = quotes?.map((q) => (
+  content = userQuotes?.map((q) => (
     <div key={q._id}>
       <div className="flex justify-between items-center my-2 mt-3 bg-muted px-3 py-2 rounded-md">
         <p className="font-medium capitalize">{q.category}</p>
@@ -65,7 +52,7 @@ const QuoteSlide = ({ user }) => {
           </Link>
         </SheetHeader>
         <ScrollArea className="flex-1">
-          {!quotes?.length ? (
+          {!userQuotes?.length ? (
             <h1 className="text-xl mt-10 text-center text-primary font-medium">
               No Quote
             </h1>
@@ -76,10 +63,10 @@ const QuoteSlide = ({ user }) => {
         <SheetFooter>
           <div className="flex justify-between items-center w-full">
             <h1 className="text-primary flext items-center">
-              {quotes?.length ? quotes?.length : ""}
-              {quotes?.length > 1
+              {userQuotes?.length ? userQuotes?.length : ""}
+              {userQuotes?.length > 1
                 ? "quotes"
-                : quotes?.length > 0
+                : userQuotes?.length > 0
                 ? "quote"
                 : ""}
             </h1>

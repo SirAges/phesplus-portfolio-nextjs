@@ -72,7 +72,9 @@ const QuoteForm = () => {
           subdata === null ||
           subdata === undefined
         ) {
-          return toast.error("No category");
+          return toast.error(
+            "Unable to fetch quote categories check your INTERNET CONNECTION"
+          );
         } else {
           setCategory(data);
           setSubCategory(subdata);
@@ -132,10 +134,10 @@ const QuoteForm = () => {
 
   const chooseCategory = (item, type) => {
     if (type === "cat") {
-      setValues((prev) => ({ ...prev, category: item._id }));
+      setQuoteValues((prev) => ({ ...prev, category: item._id }));
       setTrigger((prev) => ({ ...prev, cat: item.category }));
     } else {
-      setValues((prev) => ({ ...prev, subCategory: item._id }));
+      setQuoteValues((prev) => ({ ...prev, subCategory: item._id }));
       setTrigger((prev) => ({ ...prev, sub: item.subCategory }));
     }
   };

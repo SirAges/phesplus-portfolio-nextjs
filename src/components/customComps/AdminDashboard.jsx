@@ -19,25 +19,14 @@ import {
   createCategory,
   createSubCategory,
   deleteDoc,
-  getAllCategory,
-  getAllProjects,
-  getAllQuotes,
-  getAllSubCategory,
-  updateProject,
 } from "@lib/sanityActions";
 import {
   ArrowRight,
   Circle,
-  CircleSlash,
-  Edit,
-  Edit2,
-  Edit2Icon,
   Edit3,
   Expand,
   Link,
   Loader,
-  Pi,
-  Send,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -52,20 +41,17 @@ import { cn } from "@lib/utils";
 const AdminDashboard = () => {
   const [sending, setSending] = useState(false);
   const [sendingName, setSendingName] = useState("");
-  const [refetch, setRefetch] = useState(false);
+
   const [deleting, setDeletingCat] = useState(false);
   const [deletingIdx, setDeletingIdx] = useState(null);
-  const [category, setCategory] = useState([]);
-  const [subCategory, setSubCategory] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [quotes, setQuotes] = useState([]);
+
   const [mainCat, setMainCat] = useState({ id: "", category: "" });
   const [catInputs, setCatInputs] = useState({
     category: "",
     subCategory: "",
   });
   const statusConst = ["pending", "processing", "fulfiled"];
-  const router = useRouter();
+
   const { toasts } = useToasterStore();
   const {
     mainToggle,
@@ -74,48 +60,13 @@ const AdminDashboard = () => {
     setQOthers,
     setProjectValues,
     setQuoteValues,
+    category,
+    subCategory,
+    projects,
+    quotes,
+    setRefetch,
   } = useContext(DataContext);
 
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    const fetchCategory = async () => {
-      try {
-        const data = await getAllCategory();
-        const subdata = await getAllSubCategory();
-        const projectdata = await getAllProjects(0, 20);
-        const quotedata = await getAllQuotes();
-        if (
-          data === null ||
-          data === undefined ||
-          subdata === null ||
-          subdata === undefined ||
-          projectdata === null ||
-          projectdata === undefined ||
-          quotedata === null ||
-          quotedata === undefined
-        ) {
-          return toast.error("Unable to fetch some data");
-        } else {
-          setCategory(data);
-          setSubCategory(subdata);
-          setProjects(projectdata);
-          setQuotes(quotedata);
-
-          console.log(quotes);
-        }
-      } catch (error) {
-        console.error("Error fetching category:", error.message);
-      }
-    };
-
-    fetchCategory();
-
-    return () => {
-      // Cancel the ongoing network request
-      abortController.abort();
-    };
-  }, [refetch]);
   useEffect(() => {
     const abortController = new AbortController();
 

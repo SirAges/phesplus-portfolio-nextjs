@@ -1,14 +1,18 @@
 import { LogOut } from "lucide-react";
 import { Button } from "@components/ui/button";
 import QuoteSlide from "./QuoteSlide";
+import { useContext } from "react";
+import { DataContext } from "@hooks/DataContext";
 const Auth = ({ user, LoginLink, LogoutLink, RegisterLink }) => {
+  const { setUser } = useContext(DataContext);
+  setUser(user);
   let content;
 
   content = (
     <div className="space-x-2 flex">
       {user ? (
         <>
-          <QuoteSlide user={user} />
+          <QuoteSlide />
           <Button className={"drop-shadow-md text-white "} variant="ghost">
             <LogoutLink>
               <LogOut />

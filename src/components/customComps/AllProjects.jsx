@@ -1,6 +1,5 @@
 "use client";
-import { getAllProjects } from "@lib/sanityActions";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ProjectCard from "./ProjectCard";
 import NoProjectFound from "./NoProjectFound";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,51 +7,14 @@ import { cn } from "@lib/utils";
 import { buttonVariants } from "@components/ui/button";
 import Loading from "./Loading";
 import Masonry from "react-masonry-css";
+import { DataContext } from "@hooks/DataContext";
 const AllProjects = () => {
+  const { projects, loading, start, end, previousProjects, nextProjects } =
+    useContext(DataContext);
   const pathname = usePathname();
-  const router = useRouter();
-
-  const [loading, setLoading] = useState(false);
-  const [start, setStart] = useState(0);
-  const [end, setEnd] = useState(8);
-  const [projects, setProjects] = useState([]);
 
   if (pathname === "/dashboard") {
   }
-  useEffect(() => {
-    const abortController = new AbortController();
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const data = await getAllProjects(start, end);
-        if (data === null || data === undefined) {
-          setEnd((prev) => prev - 8);
-        }
-        setProjects(data);
-      } catch (error) {
-        console.error("Error fetching projects:", error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-
-    return () => {
-      // Cancel the ongoing network request
-      abortController.abort();
-    };
-  }, [start, end]);
-  const previousProjects = () => {
-    setStart((prev) => prev - 8);
-    setEnd((prev) => prev - 8);
-    router.refresh();
-  };
-  const nextProjects = () => {
-    setStart((prev) => prev + 8);
-    setEnd((prev) => prev + 8);
-    router.refresh();
-  };
 
   const breakpointColumnsObj = {
     default: 4,
@@ -63,7 +25,7 @@ const AllProjects = () => {
     500: 1,
   };
 
-  if (loading) return <Loading text={"Fetching Projects"} />;
+  if (loading.state) return <Loading text={"Fetching Projects"} />;
   // if (projects?.length === 0)
   //   return (
   //     <NoProjectFound
